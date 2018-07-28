@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
+    android:gravity="center"
     android:orientation="vertical"
     android:background="@color/colorBackground"
     tools:context=".MainActivity">
@@ -13,10 +13,11 @@
         android:id="@+id/tvFecha"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="72dp"
-        android:text="Indique una fecha (DD/MM/AAAA):"
+        android:layout_alignStart="@+id/spnDiaInicio"
+        android:layout_x="60dp"
+        android:layout_y="124dp"
+        android:text="Indique la hora de la fecha inicial:"
         android:textSize="17dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -24,17 +25,130 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/myEditText"
-        android:layout_width="285dp"
+        android:id="@+id/editText3"
+        android:layout_width="308dp"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="date"
-        android:textColor="@color/smallFontColor" />
+        android:inputType="time" />
+
+    <TextView
+        android:id="@+id/tvFecha3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/spnDiaInicio"
+        android:layout_x="60dp"
+        android:layout_y="124dp"
+        android:text="Indique una fecha inicial (DD/MM/AAAA):"
+        android:textSize="17dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Spinner
+            android:id="@+id/spnDiaInicio"
+            android:layout_width="87dp"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/myEditText"
+            android:layout_below="@+id/myEditText" />
+
+        <Spinner
+            android:id="@+id/spnMesInicio"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/myEditText" />
+
+        <Spinner
+            android:id="@+id/spnAnnoInicio"
+            android:layout_width="142dp"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/myEditText"
+            android:layout_below="@+id/myEditText"
+            android:layout_x="212dp"
+            android:layout_y="198dp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvFecha4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/spnDiaInicio"
+        android:layout_x="60dp"
+        android:layout_y="124dp"
+        android:text="Indique la hora de la fecha final:"
+        android:textSize="17dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editText4"
+        android:layout_width="309dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="time" />
+
+    <TextView
+        android:id="@+id/tvFecha2"
+        android:layout_width="310dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/spnDiaInicio"
+        android:layout_x="60dp"
+        android:layout_y="124dp"
+        android:text="Indique una fecha final (DD/MM/AAAA):"
+        android:textSize="17dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Spinner
+            android:id="@+id/spnDiaFinal"
+            android:layout_width="87dp"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/myEditText"
+            android:layout_below="@+id/myEditText" />
+
+        <Spinner
+            android:id="@+id/spnMesFinal"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/myEditText" />
+
+        <Spinner
+            android:id="@+id/spnAnnoFinal"
+            android:layout_width="143dp"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/myEditText"
+            android:layout_below="@+id/myEditText"
+            android:layout_x="212dp"
+            android:layout_y="198dp" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/myButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/spnDiaInicio"
+
         android:text="Procesar" />
+
+
 
 </LinearLayout>
