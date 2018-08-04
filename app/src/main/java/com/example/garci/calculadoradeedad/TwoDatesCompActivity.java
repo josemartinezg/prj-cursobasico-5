@@ -36,8 +36,8 @@ public class TwoDatesCompActivity extends AppCompatActivity implements View.OnCl
 
         mCalendar = Calendar.getInstance();
         mDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        mTimeFormat = new SimpleDateFormat("hh:mm", Locale.getDefault());
-        mDateTimeFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault());
+        mTimeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        mDateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm a", Locale.getDefault());
 
         myDatePicker = new DatePickerDialog(this, mDatePickerListener,
                 mCalendar.get(Calendar.YEAR),
@@ -46,13 +46,14 @@ public class TwoDatesCompActivity extends AppCompatActivity implements View.OnCl
         myTimePicker = new TimePickerDialog(TwoDatesCompActivity.this, mTimePickerListener,
                 mCalendar.get(Calendar.HOUR_OF_DAY),
                 mCalendar.get(Calendar.MINUTE),
-                true);
+                true/*24H Format FLAG*/);
         findViewById(R.id.date_pick).setOnClickListener(this);
         findViewById(R.id.time_pick).setOnClickListener(this);
 
         mDateDisplay = findViewById(R.id.date_display);
         mTimeDisplay = findViewById(R.id.time_display);
         mDateTimeDisplay = findViewById(R.id.date_time_display);
+        refreshDisplays();
     }
 
     @Override
@@ -77,12 +78,17 @@ public class TwoDatesCompActivity extends AppCompatActivity implements View.OnCl
 
         }
     };
-    private  DatePickerDialog.OnDateSetListener mDatePickerListener = new DatePickerDialog.OnDateSetListener() {
+    private DatePickerDialog.OnDateSetListener mDatePickerListener
+            = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+            Calendar today = Calendar.getInstance();
             mCalendar.set(Calendar.YEAR, i);
             mCalendar.set(Calendar.MONTH, i1);
             mCalendar.set(Calendar.DATE, i2);
+            if (mCalendar.after(today)){
+                throw new IllegalArgumentException("Favor no introducir fechas del futuro.");
+            }
             refreshDisplays();
         }
     };
@@ -90,31 +96,29 @@ public class TwoDatesCompActivity extends AppCompatActivity implements View.OnCl
     private String calculateTime() {
        Calendar today = Calendar.getInstance();
         if (mCalendar.after(today)){
+            Toast.makeText(this, "Por favor verifique la consistencia de la(s) fecha(s) seleccionada(s)", Toast.LENGTH_SHORT).show();
             throw new IllegalArgumentException("Favor no introducir fechas del futuro.");
         }else{
             int thisYear = today.get(Calendar.YEAR);
-            int thisDayOfYear = today.get(Calendar.DAY_OF_YEAR);
             int thisDayOfMonth = today.get(Calendar.DAY_OF_MONTH);
             int thisMonth = today.get(Calendar.MONTH);
             int thisMinute = today.get(Calendar.MINUTE);
             int thisHour = today.get(Calendar.HOUR_OF_DAY);
-            int thisSecond = today.get(Calendar.SECOND);
 
             int startingDayOfMonth = mCalendar.get(Calendar.DAY_OF_MONTH);
             int startingMonth = mCalendar.get(Calendar.MONTH);
             int startingYear = mCalendar.get(Calendar.YEAR);
             int startingMinute = mCalendar.get(Calendar.MINUTE);
             int startingHour = mCalendar.get(Calendar.HOUR_OF_DAY);
-            int startingSecond = mCalendar.get(Calendar.SECOND);
 
             LocalDate currentDate = LocalDate.of(thisYear, thisMonth, thisDayOfMonth);
             LocalDate startingDate = LocalDate.of(startingYear, startingMonth, startingDayOfMonth);
 
-            LocalTime startingTime = LocalTime.of(thisHour, thisMinute, thisSecond);
-            LocalTime currentTime = LocalTime.of(startingHour, startingMinute, startingSecond);
+            LocalTime startingTime = LocalTime.of(startingHour, startingMinute);
+            LocalTime currentTime = LocalTime.of(thisHour,thisMinute);
 
             String time = calculateAge(startingDate, currentDate, startingTime, currentTime);
-            //Toast.makeText(this, time, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Cálculo exitoso", Toast.LENGTH_SHORT).show();
             return time;
         }
 
@@ -126,19 +130,36 @@ public class TwoDatesCompActivity extends AppCompatActivity implements View.OnCl
             String mes = String.valueOf(Period.between(startingDate, currentDate).getMonths());
             String dia = String.valueOf(Period.between(startingDate, currentDate).getDays());
 
-            /*String horas = String.valueOf(Period.between();
-            String minutos = String.valueOf(Period.between(startingDate, currentDate).getDays());
-            String segundos = String.valueOf(Period.between(startingDate, currentDate).getDays());*/
+            int startingHour = startingTime.getHour();
+            int currentHour = currentTime.getHour();
+            int startingMinutes = startingTime.getMinute();
+            int currentMinutes = currentTime.getMinute();
+            int hour = 0, minutes = 0;
+            if (startingHour > currentHour){
+                hour = (24-startingHour) + currentHour;
 
-            return (anno + " años, " + mes + " meses y " + dia + " días");
+            }if (startingHour < currentHour){
+                hour = currentHour - startingHour;
+            }if (startingHour == currentHour){
+                hour = 0;
+            }
+            if (startingMinutes > currentMinutes){
+                minutes = (60 - startingMinutes) + currentMinutes;
+            }if (startingMinutes < currentMinutes){
+                minutes = currentMinutes - startingMinutes;
+            }if (startingMinutes == currentMinutes){
+                minutes = 0;
+            }
+
+            return (anno + " año(s), " + mes + " mes(es), " + dia + " día(s)\n     " + String.valueOf(hour) + " hora(s) y " + String.valueOf(minutes) + " minuto(s)");
         } else {
             return "0";
         }
     }
 
     private void refreshDisplays() {
-        mDateDisplay.setText(calculateTime());
+        mDateDisplay.setText(mDateFormat.format(mCalendar.getTime()));
         mTimeDisplay.setText(mTimeFormat.format(mCalendar.getTime()));
-        mDateTimeDisplay.setText(mDateTimeFormat.format(mCalendar.getTime()));
+        mDateTimeDisplay.setText(calculateTime());
     }
 }

@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
+    android:background="@color/colorBackground"
     tools:context=".TwoDatesCompActivity">
+
     <TextView
         android:id="@+id/date_display"
         android:layout_width="wrap_content"
@@ -17,7 +19,7 @@
         android:id="@+id/date_pick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pick Date"
+        android:text=" Seleccionar fecha de referencia "
         />
     <TextView
         android:id="@+id/time_display"
@@ -29,14 +31,15 @@
         android:id="@+id/time_pick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pick Time"
+        android:text="Seleccionar hora de referencia"
         />
+
     <TextView
         android:id="@+id/date_time_display"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="15dp"
         android:text="dd/MM/aaaa hh:mm"
-        android:textSize="30sp"/>
+        android:textSize="20sp" />
 
 </LinearLayout>

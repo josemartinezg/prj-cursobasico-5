@@ -9,25 +9,18 @@
     android:background="@color/colorBackground"
     tools:context=".MainActivity">
 
-
     <Button
         android:id="@+id/myCompareTwoDatesBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/spnDiaInicio"
-
         android:text="   Calcular tiempo entre dos fechas   " />
 
     <Button
         android:id="@+id/myCompareWithCurrentTimeBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/spnDiaInicio"
-
         android:text="Comparar tiempo desde cierta fecha" />
 
 
