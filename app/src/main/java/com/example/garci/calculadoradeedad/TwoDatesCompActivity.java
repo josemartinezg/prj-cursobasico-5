@@ -10,11 +10,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 import java.util.Calendar;
@@ -25,9 +23,9 @@ public class TwoDatesCompActivity extends AppCompatActivity implements View.OnCl
 
     private DatePickerDialog myDatePicker;
     private TimePickerDialog myTimePicker;
-    private SimpleDateFormat mDateFormat, mTimeFormat, mDateTimeFormat;
-    private Calendar mCalendar;
-    private LocalDate initialDate;
+    private SimpleDateFormat mDateFormat, mTimeFormat;
+    private Calendar mCalendar, today;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,18 +33,29 @@ public class TwoDatesCompActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_two_dates_comp);
 
         mCalendar = Calendar.getInstance();
+        today = Calendar.getInstance();
         mDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         mTimeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        mDateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm a", Locale.getDefault());
 
         myDatePicker = new DatePickerDialog(this, mDatePickerListener,
                 mCalendar.get(Calendar.YEAR),
                 mCalendar.get(Calendar.MONTH),
                 mCalendar.get(Calendar.DATE));
+                try{
+                    if (mCalendar.after(today)){
+                        Toast.makeText(this, "Por favor verifique la consistencia de la(s) fecha(s) seleccionada(s)", Toast.LENGTH_SHORT).show();
+                        //throw new IllegalArgumentException("Favor no introducir fechas del futuro.");
+                    }
+                }catch (IllegalArgumentException e){
+                    Toast.makeText(this, "Favor no introducir fechas del futuro.", Toast.LENGTH_SHORT).show();
+                }
+
+
         myTimePicker = new TimePickerDialog(TwoDatesCompActivity.this, mTimePickerListener,
                 mCalendar.get(Calendar.HOUR_OF_DAY),
                 mCalendar.get(Calendar.MINUTE),
-                true/*24H Format FLAG*/);
+                true);
+
         findViewById(R.id.date_pick).setOnClickListener(this);
         findViewById(R.id.time_pick).setOnClickListener(this);
 
@@ -82,46 +91,45 @@ public class TwoDatesCompActivity extends AppCompatActivity implements View.OnCl
             = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-            Calendar today = Calendar.getInstance();
             mCalendar.set(Calendar.YEAR, i);
             mCalendar.set(Calendar.MONTH, i1);
             mCalendar.set(Calendar.DATE, i2);
-            if (mCalendar.after(today)){
-                throw new IllegalArgumentException("Favor no introducir fechas del futuro.");
-            }
             refreshDisplays();
         }
     };
 
     private String calculateTime() {
-       Calendar today = Calendar.getInstance();
-        if (mCalendar.after(today)){
-            Toast.makeText(this, "Por favor verifique la consistencia de la(s) fecha(s) seleccionada(s)", Toast.LENGTH_SHORT).show();
-            throw new IllegalArgumentException("Favor no introducir fechas del futuro.");
-        }else{
-            int thisYear = today.get(Calendar.YEAR);
-            int thisDayOfMonth = today.get(Calendar.DAY_OF_MONTH);
-            int thisMonth = today.get(Calendar.MONTH);
-            int thisMinute = today.get(Calendar.MINUTE);
-            int thisHour = today.get(Calendar.HOUR_OF_DAY);
+        try{
+            if (mCalendar.after(today)){
+                Toast.makeText(this, "Por favor verifique la consistencia de la(s) fecha(s) seleccionada(s)", Toast.LENGTH_SHORT).show();
+                // throw new IllegalArgumentException("Favor no introducir fechas del futuro.");
+            }else{
+                int thisYear = today.get(Calendar.YEAR);
+                int thisDayOfMonth = today.get(Calendar.DAY_OF_MONTH);
+                int thisMonth = today.get(Calendar.MONTH);
+                int thisMinute = today.get(Calendar.MINUTE);
+                int thisHour = today.get(Calendar.HOUR_OF_DAY);
 
-            int startingDayOfMonth = mCalendar.get(Calendar.DAY_OF_MONTH);
-            int startingMonth = mCalendar.get(Calendar.MONTH);
-            int startingYear = mCalendar.get(Calendar.YEAR);
-            int startingMinute = mCalendar.get(Calendar.MINUTE);
-            int startingHour = mCalendar.get(Calendar.HOUR_OF_DAY);
+                int startingDayOfMonth = mCalendar.get(Calendar.DAY_OF_MONTH);
+                int startingMonth = mCalendar.get(Calendar.MONTH);
+                int startingYear = mCalendar.get(Calendar.YEAR);
+                int startingMinute = mCalendar.get(Calendar.MINUTE);
+                int startingHour = mCalendar.get(Calendar.HOUR_OF_DAY);
 
-            LocalDate currentDate = LocalDate.of(thisYear, thisMonth, thisDayOfMonth);
-            LocalDate startingDate = LocalDate.of(startingYear, startingMonth, startingDayOfMonth);
+                LocalDate currentDate = LocalDate.of(thisYear, thisMonth, thisDayOfMonth);
+                LocalDate startingDate = LocalDate.of(startingYear, startingMonth, startingDayOfMonth);
 
-            LocalTime startingTime = LocalTime.of(startingHour, startingMinute);
-            LocalTime currentTime = LocalTime.of(thisHour,thisMinute);
+                LocalTime startingTime = LocalTime.of(startingHour, startingMinute);
+                LocalTime currentTime = LocalTime.of(thisHour,thisMinute);
 
-            String time = calculateAge(startingDate, currentDate, startingTime, currentTime);
-            Toast.makeText(this, "Cálculo exitoso", Toast.LENGTH_SHORT).show();
-            return time;
+                String time = calculateAge(startingDate, currentDate, startingTime, currentTime);
+                Toast.makeText(this, "Cálculo exitoso", Toast.LENGTH_SHORT).show();
+                return time;
+            }
+        }catch(IllegalArgumentException e){
+            Toast.makeText(this, "Favor no introducir fechas del futuro.", Toast.LENGTH_SHORT).show();
         }
-
+        return "";
     }
 
     private String calculateAge(LocalDate startingDate, LocalDate currentDate, LocalTime startingTime, LocalTime currentTime) {
@@ -150,7 +158,10 @@ public class TwoDatesCompActivity extends AppCompatActivity implements View.OnCl
             }if (startingMinutes == currentMinutes){
                 minutes = 0;
             }
-
+            if (Period.between(startingDate, currentDate).getYears() == 0 && Period.between(startingDate, currentDate).getMonths() ==0
+                    && Period.between(startingDate, currentDate).getDays() == 0 && hour == 0 && minutes == 0){
+                return "";
+            }
             return (anno + " año(s), " + mes + " mes(es), " + dia + " día(s)\n     " + String.valueOf(hour) + " hora(s) y " + String.valueOf(minutes) + " minuto(s)");
         } else {
             return "0";
