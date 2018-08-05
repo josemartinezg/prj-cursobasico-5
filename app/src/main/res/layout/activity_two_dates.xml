@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="@color/colorBackground"
+    tools:context=".TwoDatesActivity">
+
+    <TextView
+        android:id="@+id/prev_date_display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_date_format"
+        android:textSize="20sp"/>
+
+    <Button
+        android:id="@+id/prev_date_pick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/prevdate_btn_txt" />
+    <TextView
+        android:id="@+id/prev_time_display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_time_format"
+        android:textSize="20sp"/>
+
+    <Button
+        android:id="@+id/prev_time_pick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="42dp"
+        android:text="@string/time_picker_btn" />
+
+
+    <TextView
+        android:id="@+id/future_date_display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_date_format"
+        android:textSize="20sp"/>
+    <Button
+        android:id="@+id/future_date_pick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/futdate_btn"
+        />
+    <TextView
+        android:id="@+id/future_time_display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_time_format"
+        android:textSize="20sp"/>
+    <Button
+        android:id="@+id/future_time_pick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="42dp"
+        android:text="@string/time_picker_btn"
+        />
+    <TextView
+        android:id="@+id/time_elapsed_display_fortwo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="@string/date_time_format_tv"
+        android:textSize="20sp"/>
+
+</LinearLayout>

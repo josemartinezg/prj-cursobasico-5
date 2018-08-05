@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,213 +19,199 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class SingleDateActivity extends AppCompatActivity implements View.OnClickListener{
-    private TextView prevDateDisplay, prevTimeDisplay;
-    private TextView futDateDisplay, futTimeDisplay, futDateTimeDisplay;
+   private TextView mDateDisplay, mTimeDisplay, mDateTimeDisplay;
 
-    private DatePickerDialog prevDatePicker, futDatePicker;
-    private TimePickerDialog prevTimePicker, futTimePicker;
+    private DatePickerDialog myDatePicker;
+    private TimePickerDialog myTimePicker;
     private SimpleDateFormat mDateFormat, mTimeFormat;
-    private Calendar prevCalendar, futCalendar;
-    private Calendar today = Calendar.getInstance();
+    private Calendar mCalendar, today;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_date);
 
-        prevCalendar = Calendar.getInstance();
-        futCalendar = Calendar.getInstance();
-
+        mCalendar = Calendar.getInstance();
+        today = Calendar.getInstance();
         mDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         mTimeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        //Creación del objeto DatePickerDialog para la fecha futura.
+        myDatePicker = new DatePickerDialog(this, mDatePickerListener,
+                mCalendar.get(Calendar.YEAR),
+                mCalendar.get(Calendar.MONTH),
+                mCalendar.get(Calendar.DATE));
+                try{
+                    if (mCalendar.after(today)){
+                        Toast.makeText(this, "Por favor verifique la consistencia de la(s) fecha(s) seleccionada(s)", Toast.LENGTH_SHORT).show();
+                    }
+                }catch (IllegalArgumentException e){
+                    Toast.makeText(this, "Favor no introducir fechas del futuro.", Toast.LENGTH_SHORT).show();
+                }
 
-
-        prevDatePicker = new DatePickerDialog(this, prevDatePickerListener,
-                prevCalendar.get(Calendar.YEAR),
-                prevCalendar.get(Calendar.MONTH),
-                prevCalendar.get(Calendar.DATE));
-        try{
-            if (prevCalendar.after(today)){
-                Toast.makeText(this, "Por favor verifique la consistencia de la(s) fecha(s) seleccionada(s)", Toast.LENGTH_SHORT).show();
-                //throw new IllegalArgumentException("Favor no introducir fechas del futuro.");
-            }
-        }catch (IllegalArgumentException e){
-            Toast.makeText(this, "Favor no introducir fechas del futuro.", Toast.LENGTH_SHORT).show();
-        }
-        prevTimePicker = new TimePickerDialog(SingleDateActivity.this, prevTimePickerListener,
-                prevCalendar.get(Calendar.HOUR_OF_DAY),
-                prevCalendar.get(Calendar.MINUTE),
-                true/*24H Format FLAG*/);
-
-        futDatePicker = new DatePickerDialog(this, futDatePickerListener,
-                futCalendar.get(Calendar.YEAR),
-                futCalendar.get(Calendar.MONTH),
-                futCalendar.get(Calendar.DATE));
-        try{
-            if ((prevCalendar.after(futCalendar) || futCalendar.after(today))){
-                Toast.makeText(this, "Por favor verifique la consistencia de la(s) fecha(s) seleccionada(s)", Toast.LENGTH_SHORT).show();
-                //throw new IllegalArgumentException("Favor no introducir fechas del futuro.");
-            }
-        }catch (IllegalArgumentException e){
-            Toast.makeText(this, "Favor no introducir fechas del futuro.", Toast.LENGTH_SHORT).show();
-        }
-
-        futTimePicker = new TimePickerDialog(SingleDateActivity.this, futTimePickerListener,
-                futCalendar.get(Calendar.HOUR_OF_DAY),
-                futCalendar.get(Calendar.MINUTE),
+        //Creación del objeto TimePickerDialog para la fecha.
+        myTimePicker = new TimePickerDialog(SingleDateActivity.this, mTimePickerListener,
+                mCalendar.get(Calendar.HOUR_OF_DAY),
+                mCalendar.get(Calendar.MINUTE),
                 true);
-
-        findViewById(R.id.prev_date_pick).setOnClickListener(this);
-        findViewById(R.id.prev_time_pick).setOnClickListener(this);
-        findViewById(R.id.future_date_pick).setOnClickListener(this);
-        findViewById(R.id.future_time_pick).setOnClickListener(this);
-
-        prevDateDisplay = findViewById(R.id.prev_date_display);
-        prevTimeDisplay = findViewById(R.id.prev_time_display);
-
-
-        futDateDisplay = findViewById(R.id.future_date_display);
-        futTimeDisplay = findViewById(R.id.future_time_display);
-        futDateTimeDisplay = findViewById(R.id.time_elapsed_display_fortwo);
+        //Habilitando el OnClickListener de estos elemntos de la interfaz gráfica.
+        findViewById(R.id.date_pick).setOnClickListener(this);
+        findViewById(R.id.time_pick).setOnClickListener(this);
+        //Conexión los elementos de la interfaz gráfica con los objetos correspondientes en Java.
+        mDateDisplay = findViewById(R.id.date_display);
+        mTimeDisplay = findViewById(R.id.time_display);
+        mDateTimeDisplay = findViewById(R.id.date_time_display);
         refreshDisplays();
     }
-
+    //Determinando los eventos a tomar parte al hacer click en los diferentes elementos.
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.prev_date_pick:
-                prevDatePicker.show();
+        switch (view.getId()) {
+            case R.id.date_pick:
+                myDatePicker.show();
                 break;
-            case R.id.future_date_pick:
-                futDatePicker.show();
-                break;
-            case R.id.prev_time_pick:
-                prevTimePicker.show();
-                break;
-            case R.id.future_time_pick:
-                futTimePicker.show();
+            case R.id.time_pick:
+                myTimePicker.show();
                 break;
         }
     }
-    private TimePickerDialog.OnTimeSetListener prevTimePickerListener = new TimePickerDialog.OnTimeSetListener() {
+    /*Los 2 métodos siguientes captan los datos de los widgets, en variables Calendar. */
+    private TimePickerDialog.OnTimeSetListener mTimePickerListener
+            = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker timePicker, int i, int i1) {
-            prevCalendar.set(Calendar.HOUR_OF_DAY, i);
-            prevCalendar.set(Calendar.MINUTE, i1);
+            mCalendar.set(Calendar.HOUR_OF_DAY, i);
+            mCalendar.set(Calendar.MINUTE, i1);
+
             refreshDisplays();
+
         }
     };
-
-    private DatePickerDialog.OnDateSetListener prevDatePickerListener = new DatePickerDialog.OnDateSetListener() {
+    private DatePickerDialog.OnDateSetListener mDatePickerListener
+            = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-            prevCalendar.set(Calendar.YEAR, i);
-            prevCalendar.set(Calendar.MONTH, i1);
-            prevCalendar.set(Calendar.DATE, i2);
-            refreshDisplays();
-
-        }
-    };
-
-    private TimePickerDialog.OnTimeSetListener futTimePickerListener = new TimePickerDialog.OnTimeSetListener() {
-        @Override
-        public void onTimeSet(TimePicker timePicker, int i, int i1) {
-            futCalendar.set(Calendar.HOUR_OF_DAY, i);
-            futCalendar.set(Calendar.MINUTE, i1);
+            mCalendar.set(Calendar.YEAR, i);
+            mCalendar.set(Calendar.MONTH, i1);
+            mCalendar.set(Calendar.DATE, i2);
             refreshDisplays();
         }
     };
-
-    private DatePickerDialog.OnDateSetListener futDatePickerListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-            futCalendar.set(Calendar.YEAR, i);
-            futCalendar.set(Calendar.MONTH, i1);
-            futCalendar.set(Calendar.DATE, i2);
-            refreshDisplays();
-        }
-    };
-
+    /*Método: calculateTime
+     * Entrada: -ninguna-
+     * Salida: String "time"
+     * Función: Hacer utilizables los datos tomados por los widgets, para sus respectivos cálculos.
+     *  Seguido, delegar los cálculos, y procesarlos en un String para su muestra. */
     private String calculateTime() {
-        Calendar today = Calendar.getInstance();
         try{
-            if (prevCalendar.after(futCalendar) || futCalendar.after(today)){
-              //  Toast.makeText(this, "Por favor verifique la consistencia de la(s) fecha(s) seleccionada(s)", Toast.LENGTH_SHORT).show();
-                throw new IllegalArgumentException("Por favor verifique la consistencia de la(s) fecha(s) seleccionada(s)");
+            if (mCalendar.after(today)){
+                Toast.makeText(this, "Por favor verifique la consistencia de la(s) fecha(s) seleccionada(s)", Toast.LENGTH_SHORT).show();
+                // throw new IllegalArgumentException("Favor no introducir fechas del futuro.");
             }else{
-                int prevDayOfMonth = prevCalendar.get(Calendar.DAY_OF_MONTH);
-                int prevMonth = prevCalendar.get(Calendar.MONTH);
-                int prevYear = prevCalendar.get(Calendar.YEAR);
-                int prevMinute = prevCalendar.get(Calendar.MINUTE);
-                int prevHour = prevCalendar.get(Calendar.HOUR_OF_DAY);
-                int prevSecond = prevCalendar.get(Calendar.SECOND);
+                int thisYear = today.get(Calendar.YEAR);
+                int thisMonth = today.get(Calendar.MONTH);
+                int thisDayOfMonth = today.get(Calendar.DAY_OF_MONTH);
 
-                int futYear = futCalendar.get(Calendar.YEAR);
-                int futDayOfMonth = futCalendar.get(Calendar.DAY_OF_MONTH);
-                int futMonth = futCalendar.get(Calendar.MONTH);
-                int futMinute = futCalendar.get(Calendar.MINUTE);
-                int futHour = futCalendar.get(Calendar.HOUR_OF_DAY);
-                int futSecond = futCalendar.get(Calendar.SECOND);
+                int thisHour = today.get(Calendar.HOUR_OF_DAY);
+                int thisMinute = today.get(Calendar.MINUTE);
 
-                LocalDate futureDate = LocalDate.of(futYear, futMonth, futDayOfMonth);
-                LocalDate previousDate = LocalDate.of(prevYear, prevMonth, prevDayOfMonth);
+                int startingYear = mCalendar.get(Calendar.YEAR);
+                int startingMonth = mCalendar.get(Calendar.MONTH);
+                int startingDayOfMonth = mCalendar.get(Calendar.DAY_OF_MONTH);
+                int startingHour = mCalendar.get(Calendar.HOUR_OF_DAY);
+                int startingMinute = mCalendar.get(Calendar.MINUTE);
 
-                LocalTime futureTime = LocalTime.of(futHour, futMinute, futSecond);
-                LocalTime previousTime = LocalTime.of(prevHour, prevMinute, prevSecond);
 
-                String time = calculateAge(previousDate, futureDate, previousTime, futureTime);
+                LocalDate currentDate = LocalDate.of(thisYear, thisMonth, thisDayOfMonth);
+                LocalDate startingDate = LocalDate.of(startingYear, startingMonth, startingDayOfMonth);
+
+                LocalTime startingTime = LocalTime.of(startingHour, startingMinute);
+                LocalTime currentTime = LocalTime.of(thisHour,thisMinute);
+
+                String time = calculateElapsedTime(startingDate, currentDate, startingTime, currentTime);
                 Toast.makeText(this, "Cálculo exitoso", Toast.LENGTH_SHORT).show();
                 return time;
             }
         }catch(IllegalArgumentException e){
-            Toast.makeText(this, "Por favor verifique la consistencia de la(s) fecha(s) seleccionada(s)", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Favor no introducir fechas del futuro.", Toast.LENGTH_SHORT).show();
         }
         return "";
     }
 
-    private String calculateAge(LocalDate startingDate, LocalDate currentDate, LocalTime startingTime, LocalTime currentTime) {
+    private String calculateElapsedTime(LocalDate startingDate, LocalDate currentDate, LocalTime startingTime, LocalTime currentTime) {
+        String displayString;
         if ((startingDate != null) && (currentDate != null)) {
-            String anno = String.valueOf(Period.between(startingDate, currentDate).getYears());
-            String mes = String.valueOf(Period.between(startingDate, currentDate).getMonths());
-            String dia = String.valueOf(Period.between(startingDate, currentDate).getDays());
+            int hour, minutes;
+            String year = String.valueOf(Period.between(startingDate, currentDate).getYears());
+            String month = String.valueOf(Period.between(startingDate, currentDate).getMonths());
+            String day = String.valueOf(Period.between(startingDate, currentDate).getDays());
 
             int startingHour = startingTime.getHour();
             int currentHour = currentTime.getHour();
             int startingMinutes = startingTime.getMinute();
             int currentMinutes = currentTime.getMinute();
-            int hour = 0, minutes = 0;
-            if (startingHour > currentHour){
-                hour = (24-startingHour) + currentHour;
 
-            }if (startingHour < currentHour){
-                hour = currentHour - startingHour;
-            }if (startingHour == currentHour){
-                hour = 0;
-            }
-            if (startingMinutes > currentMinutes){
-                minutes = (60 - startingMinutes) + currentMinutes;
-            }if (startingMinutes < currentMinutes){
-                minutes = currentMinutes - startingMinutes;
-            }if (startingMinutes == currentMinutes){
-                minutes = 0;
-            }
+
+            hour = hourRestraints(startingHour, currentHour);
+            minutes = minuteRestraints(startingMinutes, currentMinutes);
+
             if (Period.between(startingDate, currentDate).getYears() == 0 && Period.between(startingDate, currentDate).getMonths() ==0
                     && Period.between(startingDate, currentDate).getDays() == 0 && hour == 0 && minutes == 0){
-                return "";
+                displayString = "";
+            }else {
+                displayString = (year + " año(s), " + month + " mes(es), " + day + " día(s)\n     "
+                        + String.valueOf(hour) + " hora(s) y " + String.valueOf(minutes) + " minuto(s)");
             }
-            return (anno + " año(s), " + mes + " mes(es), " + dia + " día(s)\n     " + String.valueOf(hour) + " hora(s) y " + String.valueOf(minutes) + " minuto(s)");
         } else {
-            return "0";
+            displayString =  "";
         }
+        return displayString;
     }
-
+    /*Método: hourRestraints.
+     * Entrada: 2 variables int.
+     * Salida: int hour.
+     * Función: Calcular las horas transcurridas, sin perder precisión, dadas las
+     *  condiciones propias del formato de tiempo.*/
+    private int hourRestraints(int startingHour, int currentHour){
+        int hour = 0;
+        if (startingHour > currentHour){
+            hour = (24-startingHour) + currentHour;
+        }if (startingHour < currentHour){
+            hour = currentHour - startingHour;
+        }if (startingHour == currentHour){
+            hour = 0;
+        }
+        return hour;
+    }
+    /*Método: minuteRetraints.
+     * Entrada: 2 variables int.
+     * Salida: int minutes.
+     * Función: Calcular los minutos transcurridos, sin perder precisión, dadas las
+     *  condiciones propias del formato de tiempo.*/
+    private int minuteRestraints(int startingMinutes, int currentMinutes) {
+        int minutes = 0;
+        if (startingMinutes > currentMinutes){
+            minutes = (60 - startingMinutes) + currentMinutes;
+        }if (startingMinutes < currentMinutes){
+            minutes = currentMinutes - startingMinutes;
+        }if (startingMinutes == currentMinutes){
+            minutes = 0;
+        }
+        return minutes;
+    }
+    /*Método: refreshDisplays.
+     * Entrada: -ninguna-
+     * Salida: -ninguna-
+     * Función: Actualizar los elementos de la interfaz gráfica
+     *     con la información recolectada en los widgets y los resultados obtenidos.*/
+    /*Método: refreshDisplays.
+     * Entrada: -ninguna-
+     * Salida: -ninguna-
+     * Función: Actualizar los elementos de la interfaz gráfica
+     *     con la información recolectada en los widgets y los resultados obtenidos.*/
     private void refreshDisplays() {
-        prevDateDisplay.setText(mDateFormat.format(prevCalendar.getTime()));
-        prevTimeDisplay.setText(mTimeFormat.format(prevCalendar.getTime()));
-
-        futDateDisplay.setText(mDateFormat.format(futCalendar.getTime()));
-        futTimeDisplay.setText(mTimeFormat.format(futCalendar.getTime()));
-        futDateTimeDisplay.setText(calculateTime());
-
+        mDateDisplay.setText(mDateFormat.format(mCalendar.getTime()));
+        mTimeDisplay.setText(mTimeFormat.format(mCalendar.getTime()));
+        mDateTimeDisplay.setText(calculateTime());
     }
 }

@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">TimeCapsule Calculator</string>
+    <string name="prevdate_btn_txt">Elija una fecha pasada</string>
+    <string name="tv_date_format">dd/MM/aaaa</string>
+    <string name="tv_time_format">hh:mm</string>
+    <string name="time_picker_btn">Elija una hora</string>
+    <string name="futdate_btn">Elija una fecha futura</string>
+    <string name="date_time_format_tv">dd/MM/aaaa hh:mm</string>
+    <string name="fecha_ref_btn">Seleccionar fecha de referencia</string>
+    <string name="hora_ref_btn">Seleccionar hora de referencia</string>
+    <string name="comp_dos_fechas_btn">Calcular tiempo entre dos fechas</string>
+    <string name="comp_fecha_desde_btn">Comparar tiempo desde cierta fecha</string>
+
 </resources>
